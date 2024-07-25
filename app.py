@@ -5,7 +5,7 @@ from datetime import datetime
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://u467cpb39hfrqn:pc1030a52b519ffacdfdc3e8ee269635940660610a91806035f698bed947e3433@c8lj070d5ubs83.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/ddvl4j1obuhd43'
 db = SQLAlchemy(app)
 
 class DispOrder(db.Model):
@@ -227,6 +227,5 @@ def editform2(id):
         return render_template('dispupdate.html', dispatches = dispatches)
 
 if __name__ == "__main__":    
-     with app.app_context():   
-       db.create_all()
+    
      app.run(debug=True, port=8000)

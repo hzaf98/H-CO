@@ -37,6 +37,16 @@ body, html {
     align-items:center;
 }
 
+/* Make the form elements responsive */
+@media (max-width: 768px) {
+    .grid-wrapper {
+          grid-template-columns: 1fr;
+      }
+    .grid-form {
+          flex-direction: column;
+      }
+  }
+
 input[type="submit"] {
     border-radius: 5px;
     cursor: pointer;
