@@ -4,19 +4,46 @@ body, html {
    width:100%;
    box-sizing: border-box;
 }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
+/* index page */
 .buttons{
-    height:100%;
+    height:40%;
     display:flex;
     justify-content:center;
     align-items: center;
+    flex-wrap: wrap;
+    background-color: rgb(48, 46, 46);
 }
 .btn{
     margin:10%;
     height:4rem;
     border-radius: 10px;
+    background-color: #4CAF50;
+    color: #fff;
+  
+    cursor: pointer;
     
 }
+.btn:hover{
+    background-color: #3e8e41;
+}
+.title{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    height:20%;
+    background-color: rgb(105, 105, 105);
+    padding: 20px;
+    color:#000000;
+}
+
+
+
 
 .content {
     margin: 0 auto;
@@ -28,7 +55,7 @@ body, html {
 .grid-wrapper{
     display:grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0px;
+    gap: 10px;
 
 }
 .grid-form{
@@ -47,13 +74,71 @@ body, html {
       }
   }
 
-input[type="submit"] {
+
+
+/* Make the form elements responsive */
+@media (max-width: 768px) {
+    .grid-wrapper {
+          grid-template-columns: 1fr;
+      }
+    .grid-form {
+          flex-direction: column;
+      }
+  }
+
+
+
+/* forms */
+h1, h4 {
+    margin: 0;
+    padding: 0;
+  }
+  
+  h1 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+  }
+  
+  h4 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #666;
+    margin-bottom: 10px;
+  }
+  
+  input[type="text"] {
+    width: 100%;
+    height: 40px;
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  input[type="submit"] {
     border-radius: 5px;
     cursor: pointer;
-    margin:10px;
-    width:30%;
-
-}
+    margin: 10px;
+    width: 30%;
+    border: none;
+    padding: 10px;
+  }
+  
+  input[type="submit"]:hover {
+    background-color: #3e8e41;
+  }
+  
+  a {
+    text-decoration: none;
+    color: #337ab7;
+  }
+  
+  a:hover {
+    text-decoration: none;
+    color: #23527c;
+  }
 
 /* Lists page */
 table, td, th {
@@ -63,6 +148,7 @@ table, td, th {
 table {
     border-collapse: collapse;
     width: 100%;
+    margin-bottom: 1%;
 }
 
 th {
@@ -73,3 +159,26 @@ td {
     text-align: center;
     padding: 5px;
 }
+.pagination {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .pagination a {
+    margin: 0 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f7f7f7;
+    color: #337ab7;
+  }
+  
+  .pagination a:hover {
+    background-color: #f0f0f0;
+    color: #23527c;
+  }
+  
+  .pagination strong {
+    font-weight: bold;
+    color: #337ab7;
+  }
