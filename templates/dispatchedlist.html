@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>List of Dispatched Orders</title>
+{% endblock %}
+
+{% block body %}
+
+<form action="" method="GET">
+    <input type="search" name="q" placeholder="Search..." style ="text-align: center;  margin:8px;">
+    <button type="submit">Search</button>
+</form>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Product</th>
+        <th>Dispatched Date</th>
+    </tr>
+    {% for dispatch in dispatches %} 
+    <tr>
+        <td>{{ dispatch.id }}</td>
+        <td>{{ dispatch.product }}</td>
+        <td>{{ dispatch.dispatch_date }}</td>
+        <td>
+            <a href="/deletedisp/{{dispatch.id}}">Delete</a>
+            <br>
+            <a href="/dispupdate/{{dispatch.id}}">Update/View</a>
+        </td>  
+    </tr>
+    {% endfor %}
+</table>
+<a href="/" style ="margin-left:49%; font-size: 1.2rem;">Menu</a>
+
+    <div class="pagination">
+        {% if pagination.has_prev %}
+            <a href="{{ url_for('dispatchedlist', page=pagination.prev_num) }}">Previous</a>
+        {% endif %}
+    
+        {% for page in pagination.iter_pages() %}
+            {% if page != pagination.page %}
+                <a href="{{ url_for('dispatchedlist', page=page) }}">{{ page }}</a>
+            {% else %}
+                <strong>{{ page }}</strong>
+            {% endif %}
+        {% endfor %}
+    
+        {% if pagination.has_next %}
+            <a href="{{ url_for('dispatchedlist', page=pagination.next_num) }}">Next</a>
+        {% endif %}
+    </div>
+{% endblock %}

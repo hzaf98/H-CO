@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Orders Recieved</title>
+{% endblock %}
+
+{% block body %}
+
+
+<div class = "content">
+ <h1 style="text-align: center">Order Received Form</h1>  
+<h4 style="text-align: center">Create an Order Received Entry below</h4>
+<form action="/received" method="POST">
+    <h4>Product</h4><input type="text" name="product">
+    <h4>Quantity</h4><input type="text" name="quantity">
+    <h4>Arrival date</h4><input type="text" name="arrival" placeholder="DD/MM/YYYY">
+    <input type="submit" value="Submit">
+</form>
+<a href="/receivedlist">View Orders Received</a>
+<a href="/">Menu</a>
+</div>
+
+{% endblock %}

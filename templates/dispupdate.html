@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Update Dispatches</title>
+{% endblock %}
+
+{% block body %}
+<div class = "content">
+
+<h1 style="text-align: center">Update Dispatched Orders Form</h1>
+    
+<h4 style="text-align: center">Update a Dispatched Order Entry below</h4>
+<div class = "grid-form"></div>
+<form class = "grid-wrapper" action="/dispupdate/{{ dispatches.id }}" method="POST">
+    <h4>FormID</h4><input type="text" name="id" value="{{dispatches.id}}" readonly>
+    <h4>Dispatch Date</h4><input type="text" name="dispatch_date" value="{{dispatches.dispatch_date}}" placeholder="DD/MM/YYYY"> <!-- Date when the product is dispatched.
+    -->
+    <h4>Dispatch Time</h4><input type="text" name="dispatch_time" value="{{dispatches.dispatch_time}}" placeholder="00:00"> <!--  Name of the product.
+    -->
+    <h4>Collected</h4><input type="text" name="collected" value="{{dispatches.collected}}" placeholder="Yes or No"> <!--   -->
+    <h4>Delivered</h4><input type="text" name="delivered" value="{{dispatches.delivered}}" placeholder="Yes or No"> <!--  -->
+    <h4>Product Name</h4><input type="text" name="product" value="{{dispatches.product}}"> <!--  -->
+    <h4>Quantity</h4><input type="text" name="quantity" value="{{dispatches.quantity}}"> <!-- Number of units being dispatched. Pallets/cases
+    -->
+    <h4>Recipient Name</h4><input type="text" name="recipient" value="{{dispatches.recipient}}"><!-- Name of the person or entity receiving the product. -->
+</div>
+<div class = "grid-form">
+    <h4>Delivery Address</h4><input type="text" name="delivery_add" value="{{dispatches.delivery_add}}"> <!-- Address where the product is to be delivered.
+    -->
+    <h4>Collector Name</h4><input type="text" name="collector" value="{{dispatches.collector}}" placeholder="Name"> <!-- Name of the person collecting the product.
+    -->
+    <h4>Collector REG and Vehicle</h4><input type="text" name="vehicle" value="{{dispatches.vehicle}}"> <!--  -->
+    <h4>Signature/Confirmation</h4><input type="text" name="signature" value="{{dispatches.signature}}"> <!-- Digital signature or confirmation of the collector or recipient upon collection/delivery.
+    -->
+
+    <h4>Verified By</h4><input type="text" name="verified_by" value="{{dispatches.verified_by}}"> <!-- Name of the person who verified the dispatch. -->
+    <h4>Verification Date</h4><input type="text" name="verified_date" value="{{dispatches.verified_date}}" placeholder="DD/MM/YYYY">    <!-- Date when the dispatch was verified. -->
+    <h4>Date Created</h4><input type="text" name="date_created" value="{{dispatches.date_created}}" readonly>
+
+    <input type="submit" value="Submit">
+</div>
+</form>
+<a href="/dispatchedlist">View Orders Dispatched</a>
+<a href="/">Menu</a>
+</div>
+
+{% endblock %}
