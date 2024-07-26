@@ -127,7 +127,10 @@ h1, h4 {
     text-decoration: none;
     color: #23527c;
   }
-
+.links{
+  display:flex;
+  justify-content: space-between;
+}
 /* Lists page */
 table, td, th {
     border: 1px solid #aaa;
