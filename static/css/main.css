@@ -76,18 +76,6 @@ body, html {
 
 
 
-/* Make the form elements responsive */
-@media (max-width: 768px) {
-    .grid-wrapper {
-          grid-template-columns: 1fr;
-      }
-    .grid-form {
-          flex-direction: column;
-      }
-  }
-
-
-
 /* forms */
 h1, h4 {
     margin: 0;
