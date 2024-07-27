@@ -33,6 +33,7 @@ class OrderR(db.Model):
       product = db.Column(db.String)
       quantity = db.Column(db.String)
       arrival = db.Column(db.String)
+      supplier = db.Column(db.String)
       date_created = db.Column(db.DateTime, default=func.now(), onupdate=func.now())
 
      
@@ -53,8 +54,9 @@ def createform1():
         product = request.form['product']
         quantity = request.form['quantity']
         arrival = request.form['arrival']
+        supplier = request.form['supplier']
     
-        new_order = OrderR(product = product, quantity = quantity, arrival = arrival)
+        new_order = OrderR(product = product, quantity = quantity, arrival = arrival, supplier = supplier)
         
         try:
             db.session.add(new_order)
@@ -78,7 +80,8 @@ def orderslist():
             orders_paginated = OrderR.query.filter(
                 (OrderR.product.like('%' + q + '%')) |
                 (OrderR.quantity.like('%' + q + '%')) |
-                (OrderR.arrival.like('%' + q + '%')) 
+                (OrderR.arrival.like('%' + q + '%')) |
+                (OrderR.supplier.like('%' + q + '%')) 
                 
                
                 # Add more fields to search here
@@ -112,6 +115,7 @@ def editform1(id):
         orders.product = request.form['product']
         orders.quantity = request.form['arrival']
         orders.arrival = request.form['product']
+        orders.supplier = request.form['supplier']
 
         try:
             db.session.commit()
