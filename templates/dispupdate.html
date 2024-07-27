@@ -10,8 +10,9 @@
 <h1 style="text-align: center">Update Dispatched Orders Form</h1>
     
 <h4 style="text-align: center">Update a Dispatched Order Entry below</h4>
-<div class = "grid-form"></div>
+
 <form class = "grid-wrapper" action="/dispupdate/{{ dispatches.id }}" method="POST">
+<div class = "grid-form">
     <h4>FormID</h4><input type="text" name="id" value="{{dispatches.id}}" readonly>
     <h4>Dispatch Date</h4><input type="text" name="dispatch_date" value="{{dispatches.dispatch_date}}" placeholder="DD/MM/YYYY"> <!-- Date when the product is dispatched.
     -->
