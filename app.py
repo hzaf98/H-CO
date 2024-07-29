@@ -173,8 +173,8 @@ def dispatchedlist():
     if q:
             dispatches_paginated = DispOrder.query.filter(
                 (DispOrder.product.like('%' + q + '%')) |
-                (DispOrder.quantity.like('%' + q + '%')) |
-                (DispOrder.arrival.like('%' + q + '%')) 
+                (DispOrder.quantity.like('%' + q + '%')) 
+                
                 
                
                 # Add more fields to search here
