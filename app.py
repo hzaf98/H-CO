@@ -30,7 +30,7 @@ class DispOrder(db.Model):
 ### ORDERS RECEIVED DB TABLE
 class OrderR(db.Model):
       id = db.Column(db.Integer, primary_key=True)
-      product = db.Column(db.String)
+      product= db.Column(db.String)
       quantity = db.Column(db.String)
       arrival = db.Column(db.String)
       supplier = db.Column(db.String)
