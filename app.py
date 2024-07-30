@@ -51,6 +51,7 @@ class MasterProduct(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product_name = db.Column(db.String, unique=True)
     total_quantity = db.Column(db.Integer, default=0)
+    date_created = db.Column(db.DateTime, default=func.now(), onupdate=func.now())
 
 
 
@@ -62,6 +63,45 @@ class MasterProduct(db.Model):
 def index():
     
        return render_template('index.html')
+#######################################################################################
+### MASTER PRODUCT ROUTE AKA PRODUCTS IN WAREHOUSE
+
+@app.route('/mastertable')
+def masterlist():
+
+    page = int(request.args.get('page', 1))  # Get the current page number from the URL
+    per_page = 10  # Number of items to display per page
+       
+    q = request.args.get('q')  # Get the search query from the URL
+    
+    if q:
+            masterslist_paginated = MasterProduct.query.filter(
+                (MasterProduct.product_name.like('%' + q + '%')) |
+                (MasterProduct.quantity.like('%' + q + '%')) 
+                
+                
+               
+                # Add more fields to search here
+            ).order_by(MasterProduct.date_created).paginate(per_page=10, page=page, error_out=False)
+    else:
+         masterslist_paginated = MasterProduct.query.order_by(MasterProduct.date_created).paginate(per_page=10, page=page, error_out=False)
+
+    masterslist = masterslist_paginated.items  # Get the list of imports for the current page
+
+    return render_template('mastertable.html', masterslist = masterslist, pagination = masterslist_paginated)
+
+@app.route('/deletemaster/<int:id>')
+def delete3(id):
+    product_to_delete = MasterProduct.query.get_or_404(id)#Attempts to get import by id and if it doesnt exist it will 404
+
+    try:
+        db.session.delete(product_to_delete)
+        db.session.commit()
+        return redirect('/mastertable')
+    except:
+        return 'There was an issue deleting the product'
+
+
 #######################################################################################
 
 ### CREATE AN ORDER RECEIVED
