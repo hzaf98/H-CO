@@ -25,20 +25,36 @@ class DispOrder(db.Model):
       verified_by = db.Column(db.String)
       verified_date = db.Column(db.String)
    
-
+#class DispatchedProduct(db.Model):
+   # id = db.Column(db.Integer, primary_key=True)
+   # dispatch_id = db.Column(db.Integer, db.ForeignKey('DispOrder.id'))
+   # master_product_id = db.Column(db.Integer, db.ForeignKey('MasterProduct.id'))
+   # quantity_sent = db.Column(db.Integer)
 
 ### ORDERS RECEIVED DB TABLE
 class OrderR(db.Model):
       id = db.Column(db.Integer, primary_key=True)
-      product= db.Column(db.String)
-      quantity = db.Column(db.String)
       arrival = db.Column(db.String)
-      supplier = db.Column(db.String)
       date_created = db.Column(db.DateTime, default=func.now(), onupdate=func.now())
 
+class OrderRProduct(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('order_r.id'))
+    order = db.relationship('OrderR', backref='products')
+    product_name = db.Column(db.String)
+    quantity = db.Column(db.Integer)
+    supplier = db.Column(db.String) 
 
-     
-      def __repr__(self):
+##MASTER PRODUCT AKA PRODUCTS CURRENTLY IN WAREHOUSE
+
+class MasterProduct(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    product_name = db.Column(db.String, unique=True)
+    total_quantity = db.Column(db.Integer, default=0)
+
+
+
+    def __repr__(self):
            return '<Task %r>' % self.id
 
 ### MAIN MENU
@@ -52,15 +68,31 @@ def index():
 @app.route('/received', methods = ['POST', 'GET'])
 def createform1():
     if request.method == 'POST': #If post, put the values into DB, else look at page.
-        product = request.form['product']
-        quantity = request.form['quantity']
+        products = request.form.getlist('product[]')
+        quantities = request.form.getlist('quantity[]')
+        suppliers = request.form.getlist('supplier[]')
         arrival = request.form['arrival']
-        supplier = request.form['supplier']
-    
-        new_order = OrderR(product = product, quantity = quantity, arrival = arrival, supplier = supplier)
+
+        new_order = OrderR(arrival=arrival)
+        db.session.add(new_order)
+        db.session.flush()  # Get the ID of the newly created OrderR instance
+
+        for product, quantity, supplier in zip(products, quantities, suppliers):
+            # Check if the product already exists in the MasterProduct table
+            master_product = MasterProduct.query.filter_by(product_name=product).first()
+            if master_product:
+                # If the product exists, add the quantity to the total quantity
+                master_product.total_quantity += int(quantity)
+            else:
+                # If the product doesn't exist, create a new MasterProduct instance
+                master_product = MasterProduct(product_name=product, total_quantity=int(quantity))
+                db.session.add(master_product)
+
+            # Create a new OrderRProduct instance for each product
+            order_product = OrderRProduct(order_id=new_order.id, product_name=product, quantity=int(quantity), supplier=supplier)
+            db.session.add(order_product)
         
         try:
-            db.session.add(new_order)
             db.session.commit()
             return redirect('/received')
         except:
@@ -79,7 +111,7 @@ def orderslist():
     
     if q:
             orders_paginated = OrderR.query.filter(
-                (OrderR.product.like('%' + q + '%')) |
+                (OrderR.product_name.like('%' + q + '%')) |
                 (OrderR.quantity.like('%' + q + '%')) |
                 (OrderR.arrival.like('%' + q + '%')) |
                 (OrderR.supplier.like('%' + q + '%')) 
@@ -111,12 +143,22 @@ def delete(id):
 @app.route('/recupdate/<int:id>', methods=['GET', 'POST'])
 def editform1(id):
     orders = OrderR.query.get_or_404(id)
+    order_products = OrderRProduct.query.filter_by(order_id=orders.id).all()
     
     if request.method == 'POST':
-        orders.product = request.form['product']
-        orders.quantity = request.form['arrival']
-        orders.arrival = request.form['product']
-        orders.supplier = request.form['supplier']
+        orders.arrival = request.form['arrival']
+
+        products = request.form.getlist('product[]')
+        quantities = request.form.getlist('quantity[]')
+        suppliers = request.form.getlist('supplier[]')
+
+        #Sending to products table
+        for i, (product, quantity, supplier) in enumerate(zip(products, quantities, suppliers)):
+            order_product = order_products[i]
+            order_product.product_name = product
+            order_product.quantity = int(quantity)
+            order_product.supplier = supplier
+        
 
         try:
             db.session.commit()
@@ -126,7 +168,7 @@ def editform1(id):
         
     else:
 
-         return render_template('recupdate.html', orders = orders)
+         return render_template('recupdate.html', orders = orders, order_products = order_products)
     
 ###########################################################################################
 

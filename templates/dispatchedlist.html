@@ -15,6 +15,7 @@
     <tr>
         <th>ID</th>
         <th>Product</th>
+        <th>Quantity</th>
         <th>Dispatched Date</th>
         <th>Actions</th>
     </tr>
@@ -22,6 +23,7 @@
     <tr>
         <td>{{ dispatch.id }}</td>
         <td>{{ dispatch.product }}</td>
+        <td>{{ dispatch.quantity}}</td>
         <td>{{ dispatch.dispatch_date }}</td>
         <td>
             <a href="/deletedisp/{{dispatch.id}}">Delete</a>

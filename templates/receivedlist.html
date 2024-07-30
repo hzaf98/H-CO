@@ -13,15 +13,13 @@
     <table>
         <tr>
             <th>ID</th>
-            <th>Order</th>
-            <th>Quantity</th>
+            <th>Arrival Date</th>
             <th>Actions</th>
         </tr>
         {% for order in orders %} 
         <tr>
             <td>{{ order.id }}</td>
-            <td>{{ order.product }}</td>
-            <td>{{ order.quantity }}</td>
+            <td>{{ order.arrival }}</td>
             <td>
                 <a href="/deleteor/{{order.id}}">Delete</a>
                 <br>

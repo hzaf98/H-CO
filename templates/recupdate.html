@@ -12,14 +12,38 @@
     
 <form action="/recupdate/{{orders.id}}" method="POST">
     <h4>FormID</h4><input type="text" value="{{ orders.id }}" readonly>
-    <h4>Product</h4><input type="text" name="product" value="{{ orders.product }}">
-    <h4>Quantity</h4><input type="text" name="quantity" value="{{ orders.quantity }}">
     <h4>Arrival Date</h4><input type="text" name="arrival" value="{{ orders.arrival }}" placeholder="DD/MM/YYYY">
-    <h4>Supplier</h4><input type = "text" name = "supplier"value="{{ orders.supplier }}">
+    <div id="products">
+        {% for order_product in order_products %}
+            <div class="product">
+                <h4>Product</h4><input type="text" name="product[]" value="{{ order_product.product_name }}">
+                <h4>Quantity</h4><input type="text" name="quantity[]" value="{{ order_product.quantity }}">
+                <h4>Supplier</h4><input type="text" name="supplier[]" value="{{ order_product.supplier }}">
+            </div>
+        {% endfor %}
+    </div>
+    <button style = "margin:10px; "type="button" id="add-product">Add More Products</button>
+
     <h4>Date Created</h4><input type="text" name="date_created" value="{{ orders.date_created.replace(microsecond=0) }}" readonly>
-    <input type="submit" value="Add Order">
+    <input type="submit" value="Update Order">
 </form>
 <a href="/">Menu</a>
+
+<script>
+    const addProductButton = document.getElementById('add-product');
+    const productsContainer = document.getElementById('products');
+  
+    addProductButton.addEventListener('click', () => {
+      const newProduct = document.createElement('div');
+      newProduct.className = 'product';
+      newProduct.innerHTML = `
+        <h4>Product</h4><input type="text" name="product[]">
+        <h4>Quantity</h4><input type="text" name="quantity[]">
+        <h4>Supplier</h4><input type="text" name="supplier[]">
+      `;
+      productsContainer.appendChild(newProduct);
+    });
+</script>
 
 </div>
 
