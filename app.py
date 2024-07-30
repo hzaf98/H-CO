@@ -15,8 +15,6 @@ class DispOrder(db.Model):
       dispatch_time = db.Column(db.String)
       collected = db.Column(db.String)
       delivered = db.Column(db.String)
-      product = db.Column(db.String)
-      quantity = db.Column(db.String)
       recipient = db.Column(db.String)
       delivery_add = db.Column(db.String)
       collector = db.Column(db.String)
@@ -25,11 +23,13 @@ class DispOrder(db.Model):
       verified_by = db.Column(db.String)
       verified_date = db.Column(db.String)
    
-#class DispatchedProduct(db.Model):
-   # id = db.Column(db.Integer, primary_key=True)
-   # dispatch_id = db.Column(db.Integer, db.ForeignKey('DispOrder.id'))
-   # master_product_id = db.Column(db.Integer, db.ForeignKey('MasterProduct.id'))
-   # quantity_sent = db.Column(db.Integer)
+class DispatchedProduct(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    dispatch_id = db.Column(db.Integer, db.ForeignKey('disp_order.id'))
+    dispatch = db.relationship('DispOrder', backref='products')
+    product_name = db.Column(db.String)
+    quantity_sent = db.Column(db.Integer)
+    
 
 ### ORDERS RECEIVED DB TABLE
 class OrderR(db.Model):
@@ -160,7 +160,7 @@ def orderslist():
                 # Add more fields to search here
             ).order_by(OrderR.date_created).paginate(per_page=10, page=page, error_out=False)
     else:
-         orders_paginated = OrderR.query.order_by(OrderR.date_created).paginate(per_page=10, page=page, error_out=False)
+         orders_paginated = OrderR.query.order_by(OrderR.date_created.desc()).paginate(per_page=10, page=page, error_out=False)
 
     orders = orders_paginated.items  # Get the list of imports for the current page
 
@@ -217,12 +217,12 @@ def editform1(id):
 @app.route('/dispatchedform', methods = ['POST', 'GET'])
 def createform2():
     if request.method == 'POST': #If post, put the values into DB, else look at page.
+        products = request.form.getlist('product[]')
+        quantities = request.form.getlist('quantity[]')
         dispatch_date = request.form['dispatch_date']
         dispatch_time = request.form['dispatch_time']
         collected = request.form['collected']
         delivered = request.form['delivered']
-        product = request.form['product']
-        quantity = request.form['quantity']
         recipient = request.form['recipient']
         delivery_add = request.form['delivery_add']
         collector = request.form['collector']
@@ -231,10 +231,27 @@ def createform2():
         verified_by = request.form['verified_by']
         verified_date = request.form['verified_date']
 
-        new_dispatch = DispOrder(dispatch_date = dispatch_date, dispatch_time = dispatch_time, collected = collected, delivered = delivered,  product =  product, quantity = quantity, recipient = recipient, delivery_add = delivery_add, collector = collector,vehicle = vehicle, signature = signature, verified_by = verified_by, verified_date = verified_date )
+        new_dispatch = DispOrder(dispatch_date = dispatch_date, dispatch_time = dispatch_time, collected = collected, delivered = delivered, recipient = recipient, delivery_add = delivery_add, collector = collector,vehicle = vehicle, signature = signature, verified_by = verified_by, verified_date = verified_date )
+        db.session.add(new_dispatch)
+        db.session.flush()  # Get the ID of the newly created DispOrder instance
+        
+        for product, quantity in zip(products, quantities):
+        # Check if the product already exists in the MasterProduct table
+           master_product = MasterProduct.query.filter_by(product_name=product).first()
+        if master_product:
+            # If the product exists, minus the quantity from the total quantity
+            master_product.total_quantity -= int(quantity)
+        else:
+            # If the product doesn't exist, create a new MasterProduct instance
+            master_product = MasterProduct(product_name=product)
+            db.session.add(master_product)
+
+         # Create a new DispatchedProduct instance for each product
+            order_product = DispatchedProduct(dispatch_id=new_dispatch.id, product_name=product, quantity=int(quantity))
+            db.session.add(order_product)
         
         try:
-            db.session.add(new_dispatch)
+           
             db.session.commit()
             return redirect('/dispatchedform')
         except:
@@ -262,7 +279,7 @@ def dispatchedlist():
                 # Add more fields to search here
             ).order_by(DispOrder.date_created).paginate(per_page=10, page=page, error_out=False)
     else:
-         dispatches_paginated = DispOrder.query.order_by(DispOrder.date_created).paginate(per_page=10, page=page, error_out=False)
+         dispatches_paginated = DispOrder.query.order_by(DispOrder.date_created.desc()).paginate(per_page=10, page=page, error_out=False)
 
     dispatches = dispatches_paginated.items  # Get the list of imports for the current page
 
@@ -286,14 +303,13 @@ def delete2(id):
 @app.route('/dispupdate/<int:id>', methods=['GET', 'POST'])
 def editform2(id):
     dispatches = DispOrder.query.get_or_404(id)
+    dispatched_products = DispatchedProduct.query.filter_by(dispatch_id=dispatches.id).all()
 
     if request.method == 'POST': #If post, put the values into DB, else look at page.
             dispatches.dispatch_date = request.form['dispatch_date']
             dispatches.dispatch_time = request.form['dispatch_time']
             dispatches.collected = request.form['collected']
             dispatches.delivered = request.form['delivered']
-            dispatches.product = request.form['product']
-            dispatches.quantity = request.form['quantity']
             dispatches.recipient = request.form['recipient']
             dispatches.delivery_add = request.form['delivery_add']
             dispatches.collector = request.form['collector']
@@ -302,7 +318,15 @@ def editform2(id):
             dispatches.verified_by = request.form['verified_by']
             dispatches.verified_date = request.form['verified_date']
           
-            
+            products = request.form.getlist('product[]')
+            quantities = request.form.getlist('quantity[]')
+
+             #Sending to products table
+            for i, (product, quantity) in enumerate(zip(products, quantities)):
+                dispatched_product = dispatched_products[i]
+                dispatched_product.product_name = product
+                dispatched_product.quantity = int(quantity)
+
             try:
                 db.session.commit()
                 return redirect('/dispatchedlist')
@@ -311,7 +335,7 @@ def editform2(id):
                 return 'There was an issue updating the list'
             
     else:
-        return render_template('dispupdate.html', dispatches = dispatches)
+        return render_template('dispupdate.html', dispatches = dispatches, dispatched_products = dispatched_products)
 
 if __name__ == "__main__":    
     
