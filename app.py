@@ -243,11 +243,13 @@ def createform2():
             master_product.total_quantity -= int(quantity)
         else:
             # If the product doesn't exist, create a new MasterProduct instance
-            master_product = MasterProduct(product_name=product)
+            master_product = MasterProduct(product_name=product, total_quantity=0)
             db.session.add(master_product)
+            master_product.total_quantity -= int(quantity)
+
 
          # Create a new DispatchedProduct instance for each product
-            order_product = DispatchedProduct(dispatch_id=new_dispatch.id, product_name=product, quantity=int(quantity))
+            order_product = DispatchedProduct(dispatch_id=new_dispatch.id, product_name=product, quantity_sent=int(quantity))
             db.session.add(order_product)
         
         try:
@@ -321,11 +323,24 @@ def editform2(id):
             products = request.form.getlist('product[]')
             quantities = request.form.getlist('quantity[]')
 
-             #Sending to products table
             for i, (product, quantity) in enumerate(zip(products, quantities)):
-                dispatched_product = dispatched_products[i]
-                dispatched_product.product_name = product
-                dispatched_product.quantity = int(quantity)
+                if i < len(dispatched_products):
+                    dispatched_product = dispatched_products[i]
+                    dispatched_product.product_name = product
+                    dispatched_product.quantity_sent = int(quantity)
+                else:
+                    # Add new dispatched products
+                    dispatched_product = DispatchedProduct(dispatch_id=dispatches.id, product_name=product, quantity_sent=int(quantity))
+                    db.session.add(dispatched_product)
+
+            # Update master product quantities
+            for product, quantity in zip(products, quantities):
+                master_product = MasterProduct.query.filter_by(product_name=product).first()
+                if master_product:
+                    master_product.total_quantity -= int(quantity)
+                else:
+                    master_product = MasterProduct(product_name=product, total_quantity=-int(quantity))
+                    db.session.add(master_product)
 
             try:
                 db.session.commit()
