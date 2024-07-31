@@ -245,7 +245,7 @@ def createform2():
             # If the product doesn't exist, create a new MasterProduct instance
             master_product = MasterProduct(product_name=product, total_quantity=0)
             db.session.add(master_product)
-            master_product.total_quantity -= int(quantity)
+            
 
 
          # Create a new DispatchedProduct instance for each product
