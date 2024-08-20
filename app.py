@@ -44,6 +44,10 @@ class OrderRProduct(db.Model):
     product_name = db.Column(db.String)
     quantity = db.Column(db.Integer)
     supplier = db.Column(db.String) 
+    pallets = db.Column(db.String)
+    cartons = db.Column(db.String)
+    weight = db.Column(db.String)
+    pack = db.Column(db.String)
 
 ##MASTER PRODUCT AKA PRODUCTS CURRENTLY IN WAREHOUSE
 
@@ -111,13 +115,17 @@ def createform1():
         products = request.form.getlist('product[]')
         quantities = request.form.getlist('quantity[]')
         suppliers = request.form.getlist('supplier[]')
+        pallets = request.form.getlist('pallet[]')
+        cartons = request.form.getlist('carton[]')
+        packs = request.form.getlist('pack[]')
+        weights = request.form.getlist('weight[]')
         arrival = request.form['arrival']
 
         new_order = OrderR(arrival=arrival)
         db.session.add(new_order)
         db.session.flush()  # Get the ID of the newly created OrderR instance
 
-        for product, quantity, supplier in zip(products, quantities, suppliers):
+        for product, quantity, supplier, pallet, carton, pack, weight in zip(products, quantities, suppliers, pallets, cartons, packs, weights):
             # Check if the product already exists in the MasterProduct table
             master_product = MasterProduct.query.filter_by(product_name=product).first()
             if master_product:
@@ -129,7 +137,7 @@ def createform1():
                 db.session.add(master_product)
 
             # Create a new OrderRProduct instance for each product
-            order_product = OrderRProduct(order_id=new_order.id, product_name=product, quantity=int(quantity), supplier=supplier)
+            order_product = OrderRProduct(order_id=new_order.id, product_name=product, quantity=int(quantity), supplier=supplier, pallets=pallet, cartons=carton, weight=weight, pack=pack )
             db.session.add(order_product)
         
         try:
@@ -191,13 +199,21 @@ def editform1(id):
         products = request.form.getlist('product[]')
         quantities = request.form.getlist('quantity[]')
         suppliers = request.form.getlist('supplier[]')
+        pallets = request.form.getlist('pallet[]')
+        cartons = request.form.getlist('carton[]')
+        packs = request.form.getlist('pack[]')
+        weights = request.form.getlist('weight[]')
 
         #Sending to products table
-        for i, (product, quantity, supplier) in enumerate(zip(products, quantities, suppliers)):
+        for i, (product, quantity, supplier, pallet, carton, pack, weight) in enumerate(zip(products, quantities, suppliers, pallets, cartons, packs, weights)):
             order_product = order_products[i]
             order_product.product_name = product
             order_product.quantity = int(quantity)
             order_product.supplier = supplier
+            order_product.pallets = pallet
+            order_product.cartons = carton
+            order_product.pack = pack
+            order_product.weight = weight
         
 
         try:
