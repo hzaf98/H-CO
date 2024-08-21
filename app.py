@@ -79,7 +79,7 @@ def index():
 def masterlist():
 
     page = int(request.args.get('page', 1))  # Get the current page number from the URL
-    per_page = 10  # Number of items to display per page
+    per_page = 13  # Number of items to display per page
        
     q = request.args.get('q')  # Get the search query from the URL
     
@@ -91,9 +91,9 @@ def masterlist():
                 
                
                 # Add more fields to search here
-            ).order_by(MasterProduct.date_created).paginate(per_page=10, page=page, error_out=False)
+            ).order_by(MasterProduct.date_created).paginate(per_page=14, page=page, error_out=False)
     else:
-         masterslist_paginated = MasterProduct.query.order_by(MasterProduct.date_created.desc()).paginate(per_page=10, page=page, error_out=False)
+         masterslist_paginated = MasterProduct.query.order_by(MasterProduct.date_created.desc()).paginate(per_page=14, page=page, error_out=False)
 
     masterslist = masterslist_paginated.items  # Get the list of imports for the current page
 
