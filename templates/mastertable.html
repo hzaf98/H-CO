@@ -16,6 +16,10 @@
         <th>ID</th>
         <th>Product</th>
         <th>Total Quantity</th>
+        <th>Pallets</th>
+        <th>Cartons/Box/Cases</th>
+        <th>Pack</th>
+        <th>Weight(kg)</th>
         <th>Date Created</th>
         <th>Actions</th>
     </tr>
@@ -24,6 +28,10 @@
         <td>{{ master.id }}</td>
         <td>{{ master.product_name }}</td>
         <td>{{ master.total_quantity }}</td>
+        <td>{{ master.total_pallets }}</td>
+        <td>{{ master.total_cartons }}</td>
+        <td>{{ master.total_pack }}</td>
+        <td>{{ master.total_weight }}</td>
         <td>{{ master.date_created.replace(microsecond=0) }}</td>
         <td>
             <a href="/deletemaster/{{master.id}}">Delete</a>

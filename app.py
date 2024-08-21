@@ -44,10 +44,10 @@ class OrderRProduct(db.Model):
     product_name = db.Column(db.String)
     quantity = db.Column(db.Integer)
     supplier = db.Column(db.String) 
-    pallets = db.Column(db.String)
-    cartons = db.Column(db.String)
-    weight = db.Column(db.String)
-    pack = db.Column(db.String)
+    pallets = db.Column(db.Integer)
+    cartons = db.Column(db.Integer)
+    weight = db.Column(db.Integer)
+    pack = db.Column(db.Integer)
 
 ##MASTER PRODUCT AKA PRODUCTS CURRENTLY IN WAREHOUSE
 
@@ -55,6 +55,11 @@ class MasterProduct(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product_name = db.Column(db.String, unique=True)
     total_quantity = db.Column(db.Integer, default=0)
+    total_pallets = db.Column(db.Integer, default=0)
+    total_cartons = db.Column(db.Integer, default=0)
+    total_pack = db.Column(db.Integer, default=0)
+    total_weight = db.Column(db.Integer, default=0)
+    
     date_created = db.Column(db.DateTime, default=func.now(), onupdate=func.now())
 
 
@@ -131,13 +136,18 @@ def createform1():
             if master_product:
                 # If the product exists, add the quantity to the total quantity
                 master_product.total_quantity += int(quantity)
+                master_product.total_pallets += int(pallet)
+                master_product.total_cartons += int(carton)
+                master_product.total_pack += int(pack)
+                master_product.total_weight += int(weight)
+
             else:
                 # If the product doesn't exist, create a new MasterProduct instance
-                master_product = MasterProduct(product_name=product, total_quantity=int(quantity))
+                master_product = MasterProduct(product_name=product, total_quantity=int(quantity), total_pallets=int(pallet), total_cartons=int(carton), total_pack=int(pack), total_weight=int(weight))
                 db.session.add(master_product)
 
             # Create a new OrderRProduct instance for each product
-            order_product = OrderRProduct(order_id=new_order.id, product_name=product, quantity=int(quantity), supplier=supplier, pallets=pallet, cartons=carton, weight=weight, pack=pack )
+            order_product = OrderRProduct(order_id=new_order.id, product_name=product, quantity=int(quantity), supplier=supplier, pallets=int(pallet), cartons=int(carton), weight=int(weight), pack=int(pack) )
             db.session.add(order_product)
         
         try:
@@ -210,10 +220,10 @@ def editform1(id):
             order_product.product_name = product
             order_product.quantity = int(quantity)
             order_product.supplier = supplier
-            order_product.pallets = pallet
-            order_product.cartons = carton
-            order_product.pack = pack
-            order_product.weight = weight
+            order_product.pallets = int(pallet)
+            order_product.cartons = int(carton)
+            order_product.pack = int(pack)
+            order_product.weight = int(weight)
         
 
         try:
