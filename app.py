@@ -29,6 +29,10 @@ class DispatchedProduct(db.Model):
     dispatch = db.relationship('DispOrder', backref='products')
     product_name = db.Column(db.String)
     pallets_sent = db.Column(db.Integer)
+    cartons_sent = db.Column(db.Integer)
+    pack_sent = db.Column(db.Integer)
+    weight_sent = db.Column(db.Integer)
+    
 
 ### ORDERS RECEIVED DB TABLE
 class OrderR(db.Model):
@@ -236,6 +240,9 @@ def createform2():
     if request.method == 'POST': #If post, put the values into DB, else look at page.
         products = request.form.getlist('product[]')
         pallets = request.form.getlist('pallets[]')
+        cartons = request.form.getlist('carton[]')
+        packs = request.form.getlist('pack[]')
+        weights = request.form.getlist('weight[]')
         dispatch_date = request.form['dispatch_date']
         dispatch_time = request.form['dispatch_time']
         collected = request.form['collected']
@@ -252,22 +259,25 @@ def createform2():
         db.session.add(new_dispatch)
         db.session.flush()  # Get the ID of the newly created DispOrder instance
         
-        for product, pallet in zip(products, pallets):
+        for product, pallet, carton, pack, weight in zip(products, pallets, cartons, packs, weights):
         # Check if the product already exists in the MasterProduct table
            master_product = MasterProduct.query.filter_by(product_name=product).first()
         if master_product:
             # If the product exists, minus the quantity from the total quantity
-
             master_product.total_pallets -= int(pallet)
+            master_product.total_cartons -= int(carton)
+            master_product.total_pack -= int(pack)
+            master_product.total_weight -= int(weight)
+
         else:
             # If the product doesn't exist, create a new MasterProduct instance
-            master_product = MasterProduct(product_name=product, total_pallets=0)
+            master_product = MasterProduct(product_name=product, total_pallets=0, total_cartons=0, total_pack=0, total_weight=0)
             db.session.add(master_product)
             
 
 
          # Create a new DispatchedProduct instance for each product
-            order_product = DispatchedProduct(dispatch_id=new_dispatch.id, product_name=product, pallets_sent=int(pallet))
+            order_product = DispatchedProduct(dispatch_id=new_dispatch.id, product_name=product, pallets_sent=int(pallet), cartons_sent=int(carton), pack_sent=int(pack), weight_sent=int(weight))
             db.session.add(order_product)
         
         try:
@@ -339,25 +349,34 @@ def editform2(id):
           
             products = request.form.getlist('product[]')
             pallets = request.form.getlist('pallets[]')
+            cartons = request.form.getlist('carton[]')
+            packs = request.form.getlist('pack[]')
+            weights = request.form.getlist('weight[]')
 
-            for i, (product, pallet) in enumerate(zip(products, pallets)):
+            for i, (product, pallet, carton, pack, weight) in enumerate(zip(products, pallets, cartons, packs, weights)):
                 if i < len(dispatched_products):
                     dispatched_product = dispatched_products[i]
                     dispatched_product.product_name = product
                     dispatched_product.pallets_sent = int(pallet)
+                    dispatched_product.cartons_sent = int(carton)
+                    dispatched_product.pack_sent = int(pack)
+                    dispatched_product.weight_sent = int(weight)
                 else:
                     # Add new dispatched products
-                    dispatched_product = DispatchedProduct(dispatch_id=dispatches.id, product_name=product, pallets_sent=int(pallet))
+                    dispatched_product = DispatchedProduct(dispatch_id=dispatches.id, product_name=product, pallets_sent=int(pallet), cartons_sent=int(carton), pack_sent=int(pack), weight_sent=int(weight))
                     db.session.add(dispatched_product)
 
             # Update master product quantities
-            for product, pallet in zip(products, pallets):
+            for product, pallet, carton, pack, weight in zip(products, pallets, cartons, packs, weights):
                 master_product = MasterProduct.query.filter_by(product_name=product).first()
                 if master_product:
         
-                    master_product.total_pallets -= int(pallets)
+                    master_product.total_pallets -= int(pallet)
+                    master_product.total_cartons -= int(carton)
+                    master_product.total_pack -= int(pack)
+                    master_product.total_weight -= int(weight)
                 else:
-                    master_product = MasterProduct(product_name=product, total_pallets=-int(pallet))
+                    master_product = MasterProduct(product_name=product, total_pallets=-int(pallet), total_cartons=-int(carton), total_pack=-int(pack), total_weight=-int(weight))
                     db.session.add(master_product)
 
             try:

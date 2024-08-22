@@ -9,7 +9,7 @@
     <h1 style="text-align: center">Dispatched Orders Form</h1>  
     <h4 style="text-align: center">Create a Dispatched Order Entry below</h4>
 
-    <form class = "grid-wrapper" action="/dispatchedform" method="POST">
+    <form class = "grid-wrapper" action="/dispatchedform" method="POST" >
         <div class = "grid-form">
             <h4>Dispatch Date</h4><input type="text" name="dispatch_date" placeholder="DD/MM/YYYY"> <!-- Date when the product is dispatched.
             -->
@@ -18,7 +18,7 @@
             <h4>Collected</h4><input type="text" name="collected" placeholder="Yes or No"> <!--   -->
             <h4>Delivered</h4><input type="text" name="delivered" placeholder="Yes or No"> <!--  -->
             <div id="products" style="width:100%">
-                <div class="product" style="text-align: center;">
+                <div class="product">
                     <h4>Product</h4><input type="text" name="product[]">
                     <h4>Pallets</h4><input type="text" name="pallets[]" placeholder="Enter a number">
                     <h4>Cartons/box/cases</h4><input type="text" name="carton[]" placeholder="Enter a number">

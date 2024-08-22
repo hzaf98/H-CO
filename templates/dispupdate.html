@@ -24,7 +24,10 @@
                 {% for dispatched_product in dispatched_products %}
                     <div class="product">
                         <h4>Product</h4><input type="text" name="product[]" value="{{ dispatched_product.product_name }}">
-                    </div>
+                        <h4>Pallets</h4><input type="text" name="pallet[]" value="{{dispatched_product.pallets}}" placeholder="Enter a number">
+                        <h4>Cartons/box/cases</h4><input type="text" name="carton[]" value="{{dispatched_product.cartons}}" placeholder="Enter a number">
+                        <h4>Pack</h4><input type="text" name="pack[]"value="{{dispatched_product.pack}}" placeholder="Enter a number">
+                        <h4>Weight</h4><input type="text" name="weight[]"value="{{dispatched_product.weight}}" placeholder="Enter a number">                    </div>
                 {% endfor %}
             </div>
             <!-- <button style = "margin:10px; "type="button" id="add-product">Add More Products</button> -->
