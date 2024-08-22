@@ -12,20 +12,32 @@
 
     <table>
         <tr>
-            <th>ID</th>
+            <th>OrderID</th>
+            <th>Product</th>
+            <th>Pallets</th>
+            <th>Cartons/Box/Cases</th>
+            <th>Pack</th>
+            <th>Weight</th>
             <th>Arrival Date</th>
             <th>Actions</th>
         </tr>
         {% for order in orders %} 
-        <tr>
-            <td>{{ order.id }}</td>
-            <td>{{ order.arrival }}</td>
-            <td>
-                <a href="/deleteor/{{order.id}}">Delete</a>
-                <br>
-                <a href="/recupdate/{{order.id}}">Update/View</a>
-            </td>  
-        </tr>
+            {% for product in order.products %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ product.product_name }}</td>
+                <td>{{ product.pallets }}</td>
+                <td>{{ product.cartons }}</td>
+                <td>{{ product.pack }}</td>
+                <td>{{ product.weight }}</td>
+                <td>{{ order.arrival }}</td>
+                <td>
+                    <a href="/deleteor/{{order.id}}">Delete</a>
+                    <br>
+                    <a href="/recupdate/{{order.id}}">Update/View</a>
+                </td>  
+            </tr>
+            {% endfor %}
         {% endfor %}
     </table>
     <a href="/" style ="margin-left:49%; font-size: 1.2rem;">Menu</a>

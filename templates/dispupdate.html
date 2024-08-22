@@ -24,7 +24,6 @@
                 {% for dispatched_product in dispatched_products %}
                     <div class="product">
                         <h4>Product</h4><input type="text" name="product[]" value="{{ dispatched_product.product_name }}">
-                        <h4>Quantity</h4><input type="text" name="quantity[]" value="{{ dispatched_product.quantity_sent }}">
                     </div>
                 {% endfor %}
             </div>

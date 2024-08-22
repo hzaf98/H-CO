@@ -28,8 +28,7 @@ class DispatchedProduct(db.Model):
     dispatch_id = db.Column(db.Integer, db.ForeignKey('disp_order.id'))
     dispatch = db.relationship('DispOrder', backref='products')
     product_name = db.Column(db.String)
-    quantity_sent = db.Column(db.Integer)
-    
+    pallets_sent = db.Column(db.Integer)
 
 ### ORDERS RECEIVED DB TABLE
 class OrderR(db.Model):
@@ -42,7 +41,6 @@ class OrderRProduct(db.Model):
     order_id = db.Column(db.Integer, db.ForeignKey('order_r.id'))
     order = db.relationship('OrderR', backref='products')
     product_name = db.Column(db.String)
-    quantity = db.Column(db.Integer)
     supplier = db.Column(db.String) 
     pallets = db.Column(db.Integer)
     cartons = db.Column(db.Integer)
@@ -54,7 +52,6 @@ class OrderRProduct(db.Model):
 class MasterProduct(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product_name = db.Column(db.String, unique=True)
-    total_quantity = db.Column(db.Integer, default=0)
     total_pallets = db.Column(db.Integer, default=0)
     total_cartons = db.Column(db.Integer, default=0)
     total_pack = db.Column(db.Integer, default=0)
@@ -79,14 +76,13 @@ def index():
 def masterlist():
 
     page = int(request.args.get('page', 1))  # Get the current page number from the URL
-    per_page = 13  # Number of items to display per page
+    per_page = 14  # Number of items to display per page
        
     q = request.args.get('q')  # Get the search query from the URL
     
     if q:
             masterslist_paginated = MasterProduct.query.filter(
-                (MasterProduct.product_name.like('%' + q + '%')) |
-                (MasterProduct.quantity.like('%' + q + '%')) 
+                (MasterProduct.product_name.like('%' + q + '%')) 
                 
                 
                
@@ -118,7 +114,6 @@ def delete3(id):
 def createform1():
     if request.method == 'POST': #If post, put the values into DB, else look at page.
         products = request.form.getlist('product[]')
-        quantities = request.form.getlist('quantity[]')
         suppliers = request.form.getlist('supplier[]')
         pallets = request.form.getlist('pallet[]')
         cartons = request.form.getlist('carton[]')
@@ -130,12 +125,11 @@ def createform1():
         db.session.add(new_order)
         db.session.flush()  # Get the ID of the newly created OrderR instance
 
-        for product, quantity, supplier, pallet, carton, pack, weight in zip(products, quantities, suppliers, pallets, cartons, packs, weights):
+        for product, supplier, pallet, carton, pack, weight in zip(products, suppliers, pallets, cartons, packs, weights):
             # Check if the product already exists in the MasterProduct table
             master_product = MasterProduct.query.filter_by(product_name=product).first()
             if master_product:
                 # If the product exists, add the quantity to the total quantity
-                master_product.total_quantity += int(quantity)
                 master_product.total_pallets += int(pallet)
                 master_product.total_cartons += int(carton)
                 master_product.total_pack += int(pack)
@@ -143,11 +137,11 @@ def createform1():
 
             else:
                 # If the product doesn't exist, create a new MasterProduct instance
-                master_product = MasterProduct(product_name=product, total_quantity=int(quantity), total_pallets=int(pallet), total_cartons=int(carton), total_pack=int(pack), total_weight=int(weight))
+                master_product = MasterProduct(product_name=product, total_pallets=int(pallet), total_cartons=int(carton), total_pack=int(pack), total_weight=int(weight))
                 db.session.add(master_product)
 
             # Create a new OrderRProduct instance for each product
-            order_product = OrderRProduct(order_id=new_order.id, product_name=product, quantity=int(quantity), supplier=supplier, pallets=int(pallet), cartons=int(carton), weight=int(weight), pack=int(pack) )
+            order_product = OrderRProduct(order_id=new_order.id, product_name=product, supplier=supplier, pallets=int(pallet), cartons=int(carton), weight=int(weight), pack=int(pack) )
             db.session.add(order_product)
         
         try:
@@ -170,7 +164,6 @@ def orderslist():
     if q:
             orders_paginated = OrderR.query.filter(
                 (OrderR.product_name.like('%' + q + '%')) |
-                (OrderR.quantity.like('%' + q + '%')) |
                 (OrderR.arrival.like('%' + q + '%')) |
                 (OrderR.supplier.like('%' + q + '%')) 
                 
@@ -207,7 +200,6 @@ def editform1(id):
         orders.arrival = request.form['arrival']
 
         products = request.form.getlist('product[]')
-        quantities = request.form.getlist('quantity[]')
         suppliers = request.form.getlist('supplier[]')
         pallets = request.form.getlist('pallet[]')
         cartons = request.form.getlist('carton[]')
@@ -215,10 +207,9 @@ def editform1(id):
         weights = request.form.getlist('weight[]')
 
         #Sending to products table
-        for i, (product, quantity, supplier, pallet, carton, pack, weight) in enumerate(zip(products, quantities, suppliers, pallets, cartons, packs, weights)):
+        for i, (product, supplier, pallet, carton, pack, weight) in enumerate(zip(products, suppliers, pallets, cartons, packs, weights)):
             order_product = order_products[i]
             order_product.product_name = product
-            order_product.quantity = int(quantity)
             order_product.supplier = supplier
             order_product.pallets = int(pallet)
             order_product.cartons = int(carton)
@@ -244,7 +235,7 @@ def editform1(id):
 def createform2():
     if request.method == 'POST': #If post, put the values into DB, else look at page.
         products = request.form.getlist('product[]')
-        quantities = request.form.getlist('quantity[]')
+        pallets = request.form.getlist('pallets[]')
         dispatch_date = request.form['dispatch_date']
         dispatch_time = request.form['dispatch_time']
         collected = request.form['collected']
@@ -261,21 +252,22 @@ def createform2():
         db.session.add(new_dispatch)
         db.session.flush()  # Get the ID of the newly created DispOrder instance
         
-        for product, quantity in zip(products, quantities):
+        for product, pallet in zip(products, pallets):
         # Check if the product already exists in the MasterProduct table
            master_product = MasterProduct.query.filter_by(product_name=product).first()
         if master_product:
             # If the product exists, minus the quantity from the total quantity
-            master_product.total_quantity -= int(quantity)
+
+            master_product.total_pallets -= int(pallet)
         else:
             # If the product doesn't exist, create a new MasterProduct instance
-            master_product = MasterProduct(product_name=product, total_quantity=0)
+            master_product = MasterProduct(product_name=product, total_pallets=0)
             db.session.add(master_product)
             
 
 
          # Create a new DispatchedProduct instance for each product
-            order_product = DispatchedProduct(dispatch_id=new_dispatch.id, product_name=product, quantity_sent=int(quantity))
+            order_product = DispatchedProduct(dispatch_id=new_dispatch.id, product_name=product, pallets_sent=int(pallet))
             db.session.add(order_product)
         
         try:
@@ -299,8 +291,7 @@ def dispatchedlist():
     
     if q:
             dispatches_paginated = DispOrder.query.filter(
-                (DispOrder.product.like('%' + q + '%')) |
-                (DispOrder.quantity.like('%' + q + '%')) 
+                (DispOrder.product.like('%' + q + '%')) 
                 
                 
                
@@ -347,25 +338,26 @@ def editform2(id):
             dispatches.verified_date = request.form['verified_date']
           
             products = request.form.getlist('product[]')
-            quantities = request.form.getlist('quantity[]')
+            pallets = request.form.getlist('pallets[]')
 
-            for i, (product, quantity) in enumerate(zip(products, quantities)):
+            for i, (product, pallet) in enumerate(zip(products, pallets)):
                 if i < len(dispatched_products):
                     dispatched_product = dispatched_products[i]
                     dispatched_product.product_name = product
-                    dispatched_product.quantity_sent = int(quantity)
+                    dispatched_product.pallets_sent = int(pallet)
                 else:
                     # Add new dispatched products
-                    dispatched_product = DispatchedProduct(dispatch_id=dispatches.id, product_name=product, quantity_sent=int(quantity))
+                    dispatched_product = DispatchedProduct(dispatch_id=dispatches.id, product_name=product, pallets_sent=int(pallet))
                     db.session.add(dispatched_product)
 
             # Update master product quantities
-            for product, quantity in zip(products, quantities):
+            for product, pallet in zip(products, pallets):
                 master_product = MasterProduct.query.filter_by(product_name=product).first()
                 if master_product:
-                    master_product.total_quantity -= int(quantity)
+        
+                    master_product.total_pallets -= int(pallets)
                 else:
-                    master_product = MasterProduct(product_name=product, total_quantity=-int(quantity))
+                    master_product = MasterProduct(product_name=product, total_pallets=-int(pallet))
                     db.session.add(master_product)
 
             try:

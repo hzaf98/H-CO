@@ -17,7 +17,7 @@
         {% for order_product in order_products %}
             <div class="product">
                 <h4>Product</h4><input type="text" name="product[]" value="{{ order_product.product_name }}">
-                <h4>Quantity</h4><input type="text" name="quantity[]" value="{{ order_product.quantity }}" placeholder="Enter a number">
+                <!-- <h4>Quantity</h4><input type="text" name="quantity[]" value="{{ order_product.quantity }}" placeholder="Enter a number"> -->
                 <h4>Supplier</h4><input type="text" name="supplier[]" value="{{ order_product.supplier }}">
                 <h4>Pallets</h4><input type="text" name="pallet[]" value="{{order_product.pallets}}" placeholder="Enter a number">
                 <h4>Cartons/box/cases</h4><input type="text" name="carton[]" value="{{order_product.cartons}}" placeholder="Enter a number">
@@ -42,7 +42,6 @@
       newProduct.className = 'product';
       newProduct.innerHTML = `
         <h4>Product</h4><input type="text" name="product[]">
-        <h4>Quantity</h4><input type="text" name="quantity[]">
         <h4>Supplier</h4><input type="text" name="supplier[]">
         <h4>Pallets</h4><input type="text" name="pallet[]">
         <h4>Cartons/box/cases</h4><input type="text" name="carton[]">
