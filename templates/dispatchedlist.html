@@ -14,19 +14,31 @@
 <table>
     <tr>
         <th>ID</th>
+        <th>Product</th>
+        <th>Pallets</th>
+        <th>Cartons/Box/Cases</th>
+        <th>Pack</th>
+        <th>Weight(kg)</th>
         <th>Dispatched Date</th>
         <th>Actions</th>
     </tr>
     {% for dispatch in dispatches %} 
-    <tr>
-        <td>{{ dispatch.id }}</td>
-        <td>{{ dispatch.dispatch_date }}</td>
-        <td>
-            <a href="/deletedisp/{{dispatch.id}}">Delete</a>
-            <br>
-            <a href="/dispupdate/{{dispatch.id}}">Update/View</a>
-        </td>  
-    </tr>
+        {% for product in dispatch.products %}
+            <tr>
+                <td>{{ dispatch.id }}</td>
+                <td>{{ product.product_name }}</td>
+                <td>{{ product.pallets_sent }}</td>
+                <td>{{ product.cartons_sent }}</td>
+                <td>{{ product.pack_sent }}</td>
+                <td>{{ product.weight_sent }}</td>
+                <td>{{ dispatch.dispatch_date }}</td>
+                <td>
+                    <a href="/deletedisp/{{dispatch.id}}">Delete</a>
+                    <br>
+                    <a href="/dispupdate/{{dispatch.id}}">Update/View</a>
+                </td>  
+            </tr>
+        {% endfor %}
     {% endfor %}
 </table>
 <a href="/" style ="margin-left:49%; font-size: 1.2rem;">Menu</a>

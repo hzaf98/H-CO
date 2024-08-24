@@ -161,7 +161,7 @@ def createform1():
 @app.route('/receivedlist')
 def orderslist():
     page = int(request.args.get('page', 1))  # Get the current page number from the URL
-    per_page = 10  # Number of items to display per page
+    per_page = 13  # Number of items to display per page
        
     q = request.args.get('q')  # Get the search query from the URL
     
@@ -173,9 +173,9 @@ def orderslist():
                 
                
                 # Add more fields to search here
-            ).order_by(OrderR.date_created).paginate(per_page=10, page=page, error_out=False)
+            ).order_by(OrderR.date_created).paginate(per_page=13, page=page, error_out=False)
     else:
-         orders_paginated = OrderR.query.order_by(OrderR.date_created.desc()).paginate(per_page=10, page=page, error_out=False)
+         orders_paginated = OrderR.query.order_by(OrderR.date_created.desc()).paginate(per_page=13, page=page, error_out=False)
 
     orders = orders_paginated.items  # Get the list of imports for the current page
 
@@ -295,7 +295,7 @@ def createform2():
 @app.route('/dispatchedlist')
 def dispatchedlist():
     page = int(request.args.get('page', 1))  # Get the current page number from the URL
-    per_page = 10  # Number of items to display per page
+    per_page = 13  # Number of items to display per page
        
     q = request.args.get('q')  # Get the search query from the URL
     
@@ -306,9 +306,9 @@ def dispatchedlist():
                 
                
                 # Add more fields to search here
-            ).order_by(DispOrder.date_created).paginate(per_page=10, page=page, error_out=False)
+            ).order_by(DispOrder.date_created).paginate(per_page=13, page=page, error_out=False)
     else:
-         dispatches_paginated = DispOrder.query.order_by(DispOrder.date_created.desc()).paginate(per_page=10, page=page, error_out=False)
+         dispatches_paginated = DispOrder.query.order_by(DispOrder.date_created.desc()).paginate(per_page=13, page=page, error_out=False)
 
     dispatches = dispatches_paginated.items  # Get the list of imports for the current page
 
@@ -354,30 +354,30 @@ def editform2(id):
             weights = request.form.getlist('weight[]')
 
             for i, (product, pallet, carton, pack, weight) in enumerate(zip(products, pallets, cartons, packs, weights)):
-                if i < len(dispatched_products):
                     dispatched_product = dispatched_products[i]
                     dispatched_product.product_name = product
                     dispatched_product.pallets_sent = int(pallet)
                     dispatched_product.cartons_sent = int(carton)
                     dispatched_product.pack_sent = int(pack)
                     dispatched_product.weight_sent = int(weight)
-                else:
-                    # Add new dispatched products
-                    dispatched_product = DispatchedProduct(dispatch_id=dispatches.id, product_name=product, pallets_sent=int(pallet), cartons_sent=int(carton), pack_sent=int(pack), weight_sent=int(weight))
-                    db.session.add(dispatched_product)
 
-            # Update master product quantities
-            for product, pallet, carton, pack, weight in zip(products, pallets, cartons, packs, weights):
-                master_product = MasterProduct.query.filter_by(product_name=product).first()
-                if master_product:
+            #     else:
+            #         # Add new dispatched products
+            #         dispatched_product = DispatchedProduct(dispatch_id=dispatches.id, product_name=product, pallets_sent=int(pallet), cartons_sent=int(carton), pack_sent=int(pack), weight_sent=int(weight))
+            #         db.session.add(dispatched_product)
+
+            # # Update master product quantities
+            # for product, pallet, carton, pack, weight in zip(products, pallets, cartons, packs, weights):
+            #     master_product = MasterProduct.query.filter_by(product_name=product).first()
+            #     if master_product:
         
-                    master_product.total_pallets -= int(pallet)
-                    master_product.total_cartons -= int(carton)
-                    master_product.total_pack -= int(pack)
-                    master_product.total_weight -= int(weight)
-                else:
-                    master_product = MasterProduct(product_name=product, total_pallets=-int(pallet), total_cartons=-int(carton), total_pack=-int(pack), total_weight=-int(weight))
-                    db.session.add(master_product)
+            #         master_product.total_pallets -= int(pallet)
+            #         master_product.total_cartons -= int(carton)
+            #         master_product.total_pack -= int(pack)
+            #         master_product.total_weight -= int(weight)
+            #     else:
+            #         master_product = MasterProduct(product_name=product, total_pallets=-int(pallet), total_cartons=-int(carton), total_pack=-int(pack), total_weight=-int(weight))
+            #         db.session.add(master_product)
 
             try:
                 db.session.commit()
