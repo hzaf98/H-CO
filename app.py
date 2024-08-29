@@ -301,7 +301,7 @@ def dispatchedlist():
     
     if q:
             dispatches_paginated = DispOrder.query.filter(
-                (DispOrder.product.like('%' + q + '%')) 
+                (DispOrder.product_name.like('%' + q + '%')) 
                 
                 
                
