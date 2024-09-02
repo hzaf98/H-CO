@@ -221,7 +221,21 @@ def editform1(id):
             order_product.cartons = int(carton)
             order_product.pack = int(pack)
             order_product.weight = int(weight)
-        
+            
+            master_product = MasterProduct.query.filter_by(product_name=product,supplier=supplier).first()
+            
+            if master_product:
+                # If the product and supplier exists, add the pallet quantity and all other details
+                master_product.total_pallets += int(pallet)
+                master_product.total_cartons = int(carton)
+                master_product.total_pack = int(pack)
+                master_product.total_weight = int(weight)
+
+            else:
+                # If the product doesn't exist, create a new MasterProduct instance
+                master_product = MasterProduct(product_name=product,supplier=supplier, total_pallets=int(pallet), total_cartons=int(carton), total_pack=int(pack), total_weight=int(weight))
+                db.session.add(master_product)
+
 
         try:
             db.session.commit()
@@ -332,58 +346,53 @@ def editform2(id):
     dispatched_products = DispatchedProduct.query.filter_by(dispatch_id=dispatches.id).all()
 
     if request.method == 'POST': #If post, put the values into DB, else look at page.
-            dispatches.dispatch_date = request.form['dispatch_date']
-            dispatches.dispatch_time = request.form['dispatch_time']
-            dispatches.collected = request.form['collected']
-            dispatches.delivered = request.form['delivered']
-            dispatches.recipient = request.form['recipient']
-            dispatches.delivery_add = request.form['delivery_add']
-            dispatches.collector = request.form['collector']
-            dispatches.vehicle = request.form['vehicle']
-            dispatches.signature = request.form['signature']
-            dispatches.verified_by = request.form['verified_by']
-            dispatches.verified_date = request.form['verified_date']
-          
-            products = request.form.getlist('product[]')
-            pallets = request.form.getlist('pallets[]')
-            cartons = request.form.getlist('carton[]')
-            packs = request.form.getlist('pack[]')
-            weights = request.form.getlist('weight[]')
-
-            for i, (product, pallet, carton, pack, weight) in enumerate(zip(products, pallets, cartons, packs, weights)):
-                    dispatched_product = dispatched_products[i]
-                    dispatched_product.product_name = product
-                    dispatched_product.pallets_sent = int(pallet)
-                    dispatched_product.cartons_sent = int(carton)
-                    dispatched_product.pack_sent = int(pack)
-                    dispatched_product.weight_sent = int(weight)
-
-            #     else:
-            #         # Add new dispatched products
-            #         dispatched_product = DispatchedProduct(dispatch_id=dispatches.id, product_name=product, pallets_sent=int(pallet), cartons_sent=int(carton), pack_sent=int(pack), weight_sent=int(weight))
-            #         db.session.add(dispatched_product)
-
-            # # Update master product quantities
-            # for product, pallet, carton, pack, weight in zip(products, pallets, cartons, packs, weights):
-            #     master_product = MasterProduct.query.filter_by(product_name=product).first()
-            #     if master_product:
+        dispatches.dispatch_date = request.form['dispatch_date']
+        dispatches.dispatch_time = request.form['dispatch_time']
+        dispatches.collected = request.form['collected']
+        dispatches.delivered = request.form['delivered']
+        dispatches.recipient = request.form['recipient']
+        dispatches.delivery_add = request.form['delivery_add']
+        dispatches.collector = request.form['collector']
+        dispatches.vehicle = request.form['vehicle']
+        dispatches.signature = request.form['signature']
+        dispatches.verified_by = request.form['verified_by']
+        dispatches.verified_date = request.form['verified_date']
         
-            #         master_product.total_pallets -= int(pallet)
-            #         master_product.total_cartons -= int(carton)
-            #         master_product.total_pack -= int(pack)
-            #         master_product.total_weight -= int(weight)
-            #     else:
-            #         master_product = MasterProduct(product_name=product, total_pallets=-int(pallet), total_cartons=-int(carton), total_pack=-int(pack), total_weight=-int(weight))
-            #         db.session.add(master_product)
+        products = request.form.getlist('product[]')
+        suppliers = request.form.getlist('supplier[]')
+        pallets = request.form.getlist('pallets[]')
+        cartons = request.form.getlist('carton[]')
+        packs = request.form.getlist('pack[]')
+        weights = request.form.getlist('weight[]')
 
-            try:
-                db.session.commit()
-                return redirect('/dispatchedlist')
+        for i, (product, supplier, pallet, carton, pack, weight) in enumerate(zip(products, suppliers, pallets, cartons, packs, weights)):
+            dispatched_product = dispatched_products[i]
+            dispatched_product.product_name = product
+            dispatched_product.pallets_sent = int(pallet)
+            dispatched_product.cartons_sent = int(carton)
+            dispatched_product.pack_sent = int(pack)
+            dispatched_product.weight_sent = int(weight)
+
+            master_product = MasterProduct.query.filter_by(product_name = product, supplier = supplier).first()
             
-            except:
-                return 'There was an issue updating the list'
+            if master_product:
+                # If the product exists, minus the quantity from the total quantity
+                master_product.total_pallets -= int(pallet)
+                master_product.total_cartons = int(carton)
+                master_product.total_pack = int(pack)
+                master_product.total_weight = int(weight)
+            
+
+
+        try:
+            db.session.commit()
+            return redirect('/dispatchedlist')
+        
+        except:
+            return 'There was an issue updating the list'
             
     else:
+
         return render_template('dispupdate.html', dispatches = dispatches, dispatched_products = dispatched_products)
 
 if __name__ == "__main__":    

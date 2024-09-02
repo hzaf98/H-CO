@@ -18,16 +18,16 @@
             <div class="product">
                 <h4>Product</h4><input type="text" name="product[]" value="{{ order_product.product_name }}">
                 <h4>Supplier</h4><input type="text" name="supplier[]" value="{{ order_product.supplier }}">
-                <h4>Pallets</h4><input type="text" name="pallet[]" value="{{order_product.pallets}}" placeholder="Enter a number">
-                <h4>Cartons/box/cases</h4><input type="text" name="carton[]" value="{{order_product.cartons}}" placeholder="Enter a number">
-                <h4>Pack</h4><input type="text" name="pack[]"value="{{order_product.pack}}" placeholder="Enter a number">
-                <h4>Weight</h4><input type="text" name="weight[]"value="{{order_product.weight}}" placeholder="Enter a number">
+                <h4>Pallets</h4><input type="text" name="pallet[]" value="" placeholder="{{order_product.pallets}}">
+                <h4>Cartons/box/cases</h4><input type="text" name="carton[]" value="" placeholder="{{order_product.cartons}}">
+                <h4>Pack</h4><input type="text" name="pack[]"value="" placeholder="{{order_product.pack}}">
+                <h4>Weight</h4><input type="text" name="weight[]"value="" placeholder="{{order_product.weight}}">
             </div>
         {% endfor %}
     </div>
     <button style = "margin:10px; "type="button" id="add-product">Add More Products</button>
 
-    <h4>Date Created</h4><input type="text" name="date_created" value="{{ orders.date_created.replace(microsecond=0) }}" readonly>
+    <h4>Date Updated</h4><input type="text" name="date_created" value="{{ orders.date_created.replace(microsecond=0) }}" readonly>
     <input type="submit" value="Update Order">
 </form>
 <a href="/">Menu</a>

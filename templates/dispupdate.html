@@ -24,10 +24,11 @@
                 {% for dispatched_product in dispatched_products %}
                     <div class="product">
                         <h4>Product</h4><input type="text" name="product[]" value="{{ dispatched_product.product_name }}">
-                        <h4>Pallets</h4><input type="text" name="pallet[]" value="{{dispatched_product.pallets}}" placeholder="Enter a number">
-                        <h4>Cartons/box/cases</h4><input type="text" name="carton[]" value="{{dispatched_product.cartons}}" placeholder="Enter a number">
-                        <h4>Pack</h4><input type="text" name="pack[]"value="{{dispatched_product.pack}}" placeholder="Enter a number">
-                        <h4>Weight</h4><input type="text" name="weight[]"value="{{dispatched_product.weight}}" placeholder="Enter a number">                    </div>
+                        <h4>Product Supplier</h4><input type="text" name="supplier[]" value="{{ dispatched_product.supplier}}">
+                        <h4>Pallets</h4><input type="text" name="pallet[]" value="" placeholder="{{dispatched_product.pallets_sent}}">
+                        <h4>Cartons/box/cases</h4><input type="text" name="carton[]" value="" placeholder="{{dispatched_product.cartons_sent}}">
+                        <h4>Pack</h4><input type="text" name="pack[]"value= "" placeholder="{{dispatched_product.pack_sent}}">
+                        <h4>Weight</h4><input type="text" name="weight[]"value="" placeholder="{{dispatched_product.weight_sent}}">                    </div>
                 {% endfor %}
             </div>
             <!-- <button style = "margin:10px; "type="button" id="add-product">Add More Products</button> -->
@@ -45,7 +46,7 @@
 
             <h4>Verified By</h4><input type="text" name="verified_by" value="{{dispatches.verified_by}}"> <!-- Name of the person who verified the dispatch. -->
             <h4>Verification Date</h4><input type="text" name="verified_date" value="{{dispatches.verified_date}}" placeholder="DD/MM/YYYY">    <!-- Date when the dispatch was verified. -->
-            <h4>Date Created</h4><input type="text" name="date_created" value="{{dispatches.date_created}}" readonly>
+            <h4>Date Updated</h4><input type="text" name="date_created" value="{{dispatches.date_created}}" readonly>
 
             <input type="submit" value="Submit">
         </div>
