@@ -27,6 +27,7 @@ class DispatchedProduct(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     dispatch_id = db.Column(db.Integer, db.ForeignKey('disp_order.id'))
     dispatch = db.relationship('DispOrder', backref='products')
+    supplier = db.Column(db.String)
     product_name = db.Column(db.String)
     pallets_sent = db.Column(db.Integer)
     cartons_sent = db.Column(db.Integer)
@@ -55,11 +56,12 @@ class OrderRProduct(db.Model):
 
 class MasterProduct(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    product_name = db.Column(db.String, unique=True)
+    product_name = db.Column(db.String)
     total_pallets = db.Column(db.Integer, default=0)
     total_cartons = db.Column(db.Integer, default=0)
     total_pack = db.Column(db.Integer, default=0)
     total_weight = db.Column(db.Integer, default=0)
+    supplier = db.Column(db.String)
     
     date_created = db.Column(db.DateTime, default=func.now(), onupdate=func.now())
 
@@ -131,17 +133,17 @@ def createform1():
 
         for product, supplier, pallet, carton, pack, weight in zip(products, suppliers, pallets, cartons, packs, weights):
             # Check if the product already exists in the MasterProduct table
-            master_product = MasterProduct.query.filter_by(product_name=product).first()
+            master_product = MasterProduct.query.filter_by(product_name=product,supplier=supplier).first()
             if master_product:
-                # If the product exists, add the quantity to the total quantity
+                # If the product and supplier exists, add the pallet quantity
                 master_product.total_pallets += int(pallet)
-                master_product.total_cartons += int(carton)
-                master_product.total_pack += int(pack)
-                master_product.total_weight += int(weight)
+                master_product.total_cartons = int(carton)
+                master_product.total_pack = int(pack)
+                master_product.total_weight = int(weight)
 
             else:
                 # If the product doesn't exist, create a new MasterProduct instance
-                master_product = MasterProduct(product_name=product, total_pallets=int(pallet), total_cartons=int(carton), total_pack=int(pack), total_weight=int(weight))
+                master_product = MasterProduct(product_name=product,supplier=supplier, total_pallets=int(pallet), total_cartons=int(carton), total_pack=int(pack), total_weight=int(weight))
                 db.session.add(master_product)
 
             # Create a new OrderRProduct instance for each product
@@ -239,6 +241,7 @@ def editform1(id):
 def createform2():
     if request.method == 'POST': #If post, put the values into DB, else look at page.
         products = request.form.getlist('product[]')
+        suppliers = request.form.getlist('supplier[]')
         pallets = request.form.getlist('pallets[]')
         cartons = request.form.getlist('carton[]')
         packs = request.form.getlist('pack[]')
@@ -259,25 +262,19 @@ def createform2():
         db.session.add(new_dispatch)
         db.session.flush()  # Get the ID of the newly created DispOrder instance
         
-        for product, pallet, carton, pack, weight in zip(products, pallets, cartons, packs, weights):
+        for product, supplier, pallet, carton, pack, weight in zip(products, suppliers, pallets, cartons, packs, weights):
         # Check if the product already exists in the MasterProduct table
-           master_product = MasterProduct.query.filter_by(product_name=product).first()
-        if master_product:
-            # If the product exists, minus the quantity from the total quantity
-            master_product.total_pallets -= int(pallet)
-            master_product.total_cartons -= int(carton)
-            master_product.total_pack -= int(pack)
-            master_product.total_weight -= int(weight)
-
-        else:
-            # If the product doesn't exist, create a new MasterProduct instance
-            master_product = MasterProduct(product_name=product, total_pallets=0, total_cartons=0, total_pack=0, total_weight=0)
-            db.session.add(master_product)
-            
+            master_product = MasterProduct.query.filter_by(product_name=product, supplier = supplier).first()
+            if master_product:
+                # If the product exists, minus the quantity from the total quantity
+                master_product.total_pallets -= int(pallet)
+                master_product.total_cartons = int(carton)
+                master_product.total_pack = int(pack)
+                master_product.total_weight = int(weight)
 
 
-         # Create a new DispatchedProduct instance for each product
-            order_product = DispatchedProduct(dispatch_id=new_dispatch.id, product_name=product, pallets_sent=int(pallet), cartons_sent=int(carton), pack_sent=int(pack), weight_sent=int(weight))
+            # Create a new DispatchedProduct instance for each product
+            order_product = DispatchedProduct(dispatch_id=new_dispatch.id, product_name=product, supplier = supplier, pallets_sent=int(pallet), cartons_sent=int(carton), pack_sent=int(pack), weight_sent=int(weight))
             db.session.add(order_product)
         
         try:

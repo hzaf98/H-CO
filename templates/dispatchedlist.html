@@ -15,6 +15,7 @@
     <tr>
         <th>ID</th>
         <th>Product</th>
+        <th>Product Supplier</th>
         <th>Pallets</th>
         <th>Cartons/Box/Cases</th>
         <th>Pack</th>
@@ -27,6 +28,7 @@
             <tr>
                 <td>{{ dispatch.id }}</td>
                 <td>{{ product.product_name }}</td>
+                <td>{{ product.supplier}}</td>
                 <td>{{ product.pallets_sent }}</td>
                 <td>{{ product.cartons_sent }}</td>
                 <td>{{ product.pack_sent }}</td>
