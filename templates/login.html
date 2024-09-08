@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+
+    
+{% block head %}
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   
+        <title>Log in</title>
+
+{% endblock %}
+
+{% block body %}
+
+
+    <h1 style = "text-align: center;">Login page</h1>
+
+    <form style = "text-align: center;"method="POST" action="{{ url_for('login') }}">
+        {{ form.hidden_tag() }}
+        <div>
+            <!-- {{ form.username.label }} -->
+            {{ form.username(size=32) }}
+        </div>
+        <div>
+            <!-- {{ form.password.label }} -->
+            {{ form.password(size=32) }}
+        </div>
+        <div>
+            {{ form.submit() }}
+        </div>
+    
+    </form>
+    
+    {% for message in get_flashed_messages() %}
+    <p style="text-align: center; color: red;">{{ message }}</p>
+{% endfor %}
+{% endblock %}
+
