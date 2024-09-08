@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Create Dispatched Form London Spain</title>
+{% endblock %}
+
+{% block body %}
+<div class = "content">
+    <h1 style="text-align: center">Dispatched Orders Form</h1>  
+    <h4 style="text-align: center">Create a Dispatched Order Entry below</h4>
+
+    <form class = "grid-wrapper" action="/espform" method="POST" >
+        <div class = "grid-form">
+            <h4>Dispatch Date</h4><input type="text" name="dispatch_date" placeholder="DD/MM/YYYY"> <!-- Date when the product is dispatched.
+            -->
+            <h4>Dispatch Time</h4><input type="text" name="dispatch_time" placeholder="00:00"> <!--  Name of the product.
+            -->
+            <h4>Collected</h4><input type="text" name="collected" placeholder="Yes or No"> <!--   -->
+            <h4>Delivered</h4><input type="text" name="delivered" placeholder="Yes or No"> <!--  -->
+            <div id="products" style="width:100%">
+                <div class="product">
+                    <h4>Product</h4><input type="text" name="product[]">
+                    <h4>Product Supplier</h4><input type="text" name="supplier[]">
+                    <h4>Pallets</h4><input type="text" name="pallets[]" placeholder="Enter a number">
+                    <h4>Cartons/box/cases</h4><input type="text" name="carton[]" placeholder="Enter a number">
+                    <h4>Pack</h4><input type="text" name="pack[]" placeholder="Enter a number">
+                    <h4>Weight(kg)</h4><input type="text" name="weight[]" placeholder="Enter a number">
+                </div> 
+            </div>    
+            <!-- <button style = "margin:10px; "type="button" id="add-product">Add More Products</button>  --> 
+
+           
+        </div>
+        <div class = "grid-form">
+            <h4>Recipient Name</h4><input type="text" name="recipient"><!-- Name of the person or entity receiving the product. -->
+            <h4>Delivery Address</h4><input type="text" name="delivery_add"> <!-- Address where the product is to be delivered.
+            -->
+            <h4>Collector Name</h4><input type="text" name="collector" placeholder="Name"> <!-- Name of the person collecting the product.
+            -->
+            <h4>Collector REG and Vehicle</h4><input type="text" name="vehicle"> <!--  -->
+            <h4>Digital Signature</h4><input type="text" name="signature"> <!-- Digital signature or confirmation of the collector or recipient upon collection/delivery.
+            -->
+
+            <h4>Verified By</h4><input type="text" name="verified_by"> <!-- Name of the person who verified the dispatch. -->
+            <h4>Verification Date</h4><input type="text" name="verified_date" placeholder="DD/MM/YYYY">    <!-- Date when the dispatch was verified. -->
+
+            <input type="submit" value="Submit">
+        </div>
+    </form>
+    <div class = "links">
+        <a href="/">Menu</a>
+        <a href="/esplist">View Orders Dispatched</a>
+    </div>
+</div>
+<script>
+    const addProductButton = document.getElementById('add-product');
+    const productsContainer = document.getElementById('products');
+  
+    addProductButton.addEventListener('click', () => {
+      const newProduct = document.createElement('div');
+      newProduct.className = 'product';
+      newProduct.innerHTML = `
+        <h4>Product</h4><input type="text" name="product[]">
+        <h4>Pallets</h4><input type="text" name="pallet[]">
+        <h4>Cartons/box/cases</h4><input type="text" name="carton[]">
+        <h4>Pack</h4><input type="text" name="pack[]">
+        <h4>Weight</h4><input type="text" name="weight[]">
+      `;
+      productsContainer.appendChild(newProduct);
+    });
+  </script> 
+{% endblock %} 

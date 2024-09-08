@@ -19,6 +19,7 @@
             <th>Pack</th>
             <th>Weight(kg)</th>
             <th>Supplier</th>
+            <th>Location</th>
             <th>Arrival Date</th>
             <th>Actions</th>
         </tr>
@@ -32,6 +33,7 @@
                 <td>{{ product.pack }}</td>
                 <td>{{ product.weight }}</td>
                 <td>{{ product.supplier}}</td>
+                <td>{{ product.location }}</td>
                 <td>{{ order.arrival }}</td>
                 <td>
                     <a href="/deleteor/{{order.id}}">Delete</a>

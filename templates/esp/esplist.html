@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>List of Dispatched Orders</title>
+{% endblock %}
+
+{% block body %}
+
+<form action="" method="GET">
+    <input type="search" name="q" placeholder="Search..." style ="text-align: center;  margin:8px;">
+    <button type="submit">Search</button>
+</form>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Product</th>
+        <th>Product Supplier</th>
+        <th>Pallets</th>
+        <th>Cartons/Box/Cases</th>
+        <th>Pack</th>
+        <th>Weight(kg)</th>
+        <th>Dispatched Date</th>
+        <th>Actions</th>
+    </tr>
+    {% for dispatch in dispatches %} 
+        {% for product in dispatch.products %}
+            <tr>
+                <td>{{ dispatch.id }}</td>
+                <td>{{ product.product_name }}</td>
+                <td>{{ product.supplier}}</td>
+                <td>{{ product.pallets_sent }}</td>
+                <td>{{ product.cartons_sent }}</td>
+                <td>{{ product.pack_sent }}</td>
+                <td>{{ product.weight_sent }}</td>
+                <td>{{ dispatch.dispatch_date }}</td>
+                <td>
+                    <a href="/espdeletedisp/{{dispatch.id}}">Delete</a>
+                    <br>
+                    <a href="">Update/View</a>
+                </td>  
+            </tr>
+        {% endfor %}
+    {% endfor %}
+</table>
+<a href="/" style ="margin-left:49%; font-size: 1.2rem;">Menu</a>
+
+    <div class="pagination">
+        {% if pagination.has_prev %}
+            <a href="{{ url_for('esplist', page=pagination.prev_num) }}">Previous</a>
+        {% endif %}
+    
+        {% for page in pagination.iter_pages() %}
+            {% if page != pagination.page %}
+                <a href="{{ url_for('esplist', page=page) }}">{{ page }}</a>
+            {% else %}
+                <strong>{{ page }}</strong>
+            {% endif %}
+        {% endfor %}
+    
+        {% if pagination.has_next %}
+            <a href="{{ url_for('esplist', page=pagination.next_num) }}">Next</a>
+        {% endif %}
+    </div>
+{% endblock %}
