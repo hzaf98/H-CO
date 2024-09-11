@@ -1,4 +1,5 @@
-from flask import Blueprint, app, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for
+from flask_login import login_required
 from db import db
 from models.models import LdnDispOrder, LdnDispatchedProduct, MasterProduct
 
@@ -8,6 +9,7 @@ ldn_bp = Blueprint('ldn', __name__)
 
 ### LDN DISPATCHES
 @ldn_bp.route('/ldnform', methods = ['POST', 'GET'])
+@login_required
 def ldnform():
     if request.method == 'POST': #If post, put the values into DB, else look at page.
         products = request.form.getlist('product[]')
@@ -58,6 +60,7 @@ def ldnform():
      return render_template('/ldn/ldnform.html')
     
 @ldn_bp.route('/ldnlist')
+@login_required
 def ldnlist():
     page = int(request.args.get('page', 1))  # Get the current page number from the URL
     per_page = 13  # Number of items to display per page

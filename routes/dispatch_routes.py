@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for
+from flask_login import login_required
 from db import db
 from models.models import DispOrder, DispatchedProduct, MasterProduct
 
@@ -7,6 +8,7 @@ dispatch_bp = Blueprint('dispatch', __name__)
 ### CREATE DISPATCHED ORDER FORM
 
 @dispatch_bp.route('/dispatchedform', methods = ['POST', 'GET'])
+@login_required
 def createform2():
     if request.method == 'POST': #If post, put the values into DB, else look at page.
         products = request.form.getlist('product[]')
@@ -59,6 +61,7 @@ def createform2():
 ### DISPATCHED ORDERS LIST
 
 @dispatch_bp.route('/dispatchedlist')
+@login_required
 def dispatchedlist():
     page = int(request.args.get('page', 1))  # Get the current page number from the URL
     per_page = 13  # Number of items to display per page
@@ -96,6 +99,7 @@ def delete2(id):
 ### UPDATE DISPATCHED ORDER
 
 @dispatch_bp.route('/dispupdate/<int:id>', methods=['GET', 'POST'])
+@login_required
 def editform2(id):
     dispatches = DispOrder.query.get_or_404(id)
     dispatched_products = DispatchedProduct.query.filter_by(dispatch_id=dispatches.id).all()

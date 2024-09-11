@@ -1,4 +1,5 @@
-from flask import Blueprint, app, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for
+from flask_login import login_required
 from db import db
 from models.models import EspDispOrder, EspDispatchedProduct, MasterProduct
 
@@ -6,6 +7,7 @@ esp_bp = Blueprint('esp', __name__)
 
 ### ESP DISPATCHES
 @esp_bp.route('/espform', methods = ['POST', 'GET'])
+@login_required
 def espform():
     if request.method == 'POST': #If post, put the values into DB, else look at page.
         products = request.form.getlist('product[]')
@@ -56,6 +58,7 @@ def espform():
      return render_template('/esp/espform.html')
     
 @esp_bp.route('/esplist')
+@login_required
 def esplist():
     page = int(request.args.get('page', 1))  # Get the current page number from the URL
     per_page = 13  # Number of items to display per page

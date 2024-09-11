@@ -1,8 +1,24 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from db import db
+from flask_login import UserMixin
+from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import InputRequired, Length, ValidationError
 
+class User(db.Model, UserMixin):
+     id = db.Column(db.Integer, primary_key = True)
+     username = db.Column(db.String(20), nullable=False, unique=True)
+     password = db.Column(db.String(80), nullable=False)
 
+class LoginForm(FlaskForm):
+    username = StringField(validators=[InputRequired(), Length(
+        min=4, max=20)], render_kw={"placeholder": "Username"})
+    password = PasswordField(validators=[InputRequired(), Length(
+        min=4, max=20)], render_kw={"placeholder": "Password"})
+    
+    submit = SubmitField("Login")
 
 class DispOrder(db.Model):
       id = db.Column(db.Integer, primary_key=True)

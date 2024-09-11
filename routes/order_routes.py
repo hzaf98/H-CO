@@ -1,10 +1,12 @@
 from flask import Blueprint, render_template, request, redirect, url_for
+from flask_login import login_required
 from db import db
 from models.models import MasterProduct, OrderR, OrderRProduct
 
 order_bp = Blueprint('order', __name__)
 ### CREATE AN ORDER RECEIVED
 @order_bp.route('/received', methods = ['POST', 'GET'])
+@login_required
 def createform1():
     if request.method == 'POST': #If post, put the values into DB, else look at page.
         products = request.form.getlist('product[]')

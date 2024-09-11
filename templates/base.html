@@ -7,6 +7,16 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-    {% block body %}{% endblock %}
+    <nav>
+        <ul>
+            {% if current_user.is_authenticated %}
+            <li><a href="{{ ('/logout') }}">Logout</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    
+    {% block body %}
+    
+    {% endblock %}
 </body>
 </html>
